@@ -440,36 +440,6 @@ private final class BuildStarmineAd: BaseBuild {
         ["libstarmine_ad"]
     }
 
-    override func createXCFramework() throws {
-        try? FileManager.default.createDirectory(at: self.xcframeworkDirectoryURL, withIntermediateDirectories: true, attributes: nil)
-        try? Utility.removeFiles(extensions: [".xcframework"], currentDirectoryURL: self.xcframeworkDirectoryURL)
-
-        var arguments = ["-create-xcframework"]
-        for platform in BaseBuild.platforms {
-            guard let libraryPath = try universalLibrary(platform: platform) else {
-                continue
-            }
-            let firstArch = architectures(platform).first!
-            let headersPath = thinDir(platform: platform, arch: firstArch) + "include"
-            arguments.append("-library")
-            arguments.append(libraryPath.path)
-            arguments.append("-headers")
-            arguments.append(headersPath.path)
-        }
-
-        guard arguments.count > 1 else {
-            return
-        }
-
-        let output = self.xcframeworkDirectoryURL + ["Libstarmine_ad.xcframework"]
-        if FileManager.default.fileExists(atPath: output.path) {
-            try? FileManager.default.removeItem(at: output)
-        }
-        arguments.append("-output")
-        arguments.append(output.path)
-        try Utility.launch(path: "/usr/bin/xcodebuild", arguments: arguments)
-    }
-
     override func build(platform: PlatformType, arch: ArchType) throws {
         let targetTriple = try rustTarget(platform: platform, arch: arch)
         try ensureRustTargetInstalled(targetTriple)
@@ -493,7 +463,7 @@ private final class BuildStarmineAd: BaseBuild {
             environment: environment
         )
 
-        let builtLibrary = cargoTargetDir + [targetTriple, "release", "libstarmine_ad.a"]
+        let builtLibrary = cargoTargetDir + [targetTriple, "release", "libstarmine_ad.dylib"]
         guard FileManager.default.fileExists(atPath: builtLibrary.path) else {
             throw NSError(domain: "missing libstarmine_ad artifact at \(builtLibrary.path)", code: 1)
         }
@@ -506,32 +476,7 @@ private final class BuildStarmineAd: BaseBuild {
         try FileManager.default.createDirectory(at: libDir, withIntermediateDirectories: true, attributes: nil)
 
         try FileManager.default.copyItem(at: sourceURL + "include", to: includeDir)
-        try FileManager.default.copyItem(at: builtLibrary, to: libDir + "libstarmine_ad.a")
-    }
-
-    private func universalLibrary(platform: PlatformType) throws -> URL? {
-        let archLibraries = architectures(platform).compactMap { arch -> URL? in
-            let library = thinDir(platform: platform, arch: arch) + ["lib", "libstarmine_ad.a"]
-            return FileManager.default.fileExists(atPath: library.path) ? library : nil
-        }
-        guard let firstLibrary = archLibraries.first else {
-            return nil
-        }
-        if archLibraries.count == 1 {
-            return firstLibrary
-        }
-
-        let universalDir = URL.currentDirectory + [library.rawValue, platform.rawValue, "universal"]
-        try? FileManager.default.removeItem(at: universalDir)
-        try FileManager.default.createDirectory(at: universalDir, withIntermediateDirectories: true, attributes: nil)
-
-        let output = universalDir + "libstarmine_ad.a"
-        var arguments = ["-create"]
-        arguments.append(contentsOf: archLibraries.map(\.path))
-        arguments.append("-output")
-        arguments.append(output.path)
-        try Utility.launch(path: "/usr/bin/lipo", arguments: arguments)
-        return output
+        try FileManager.default.copyItem(at: builtLibrary, to: libDir + "libstarmine_ad.dylib")
     }
 
     private func ensureRustTargetInstalled(_ targetTriple: String) throws {
