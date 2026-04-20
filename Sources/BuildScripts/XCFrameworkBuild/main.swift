@@ -549,13 +549,40 @@ private class BuildMPV: BaseBuild {
         if FileManager.default.fileExists(atPath: patch.path) {
             let fileNames = try FileManager.default.contentsOfDirectory(atPath: patch.path).sorted()
             for fileName in fileNames where fileName.hasSuffix(".patch") {
-                try Utility.launch(
-                    path: "/usr/bin/git",
-                    arguments: ["apply", "\((patch + fileName).path)"],
-                    currentDirectoryURL: directoryURL
-                )
+                try applyPatchIfNeeded((patch + fileName), name: fileName)
             }
         }
+    }
+
+    private func applyPatchIfNeeded(_ patchURL: URL, name: String) throws {
+        let quotedPath = "'\(patchURL.path)'"
+        if Utility.shell("/usr/bin/git apply --check \(quotedPath) >/dev/null 2>&1", currentDirectoryURL: directoryURL) != nil {
+            try Utility.launch(
+                path: "/usr/bin/git",
+                arguments: ["apply", patchURL.path],
+                currentDirectoryURL: directoryURL
+            )
+            return
+        }
+        if Utility.shell("/usr/bin/git apply --reverse --check \(quotedPath) >/dev/null 2>&1", currentDirectoryURL: directoryURL) != nil {
+            print("Patch \(name) already present in \(directoryURL.lastPathComponent), skipping")
+            return
+        }
+        throw NSError(domain: "failed to apply \(name) to \(directoryURL.lastPathComponent)", code: 1)
+    }
+
+    private func supportsMoltenVK() -> Bool {
+        for fileName in ["meson.options", "meson_options.txt"] {
+            let fileURL = directoryURL + fileName
+            guard let data = FileManager.default.contents(atPath: fileURL.path),
+                  let text = String(data: data, encoding: .utf8) else {
+                continue
+            }
+            if text.contains("option('moltenvk'") || text.contains("option(\"moltenvk\"") {
+                return true
+            }
+        }
+        return false
     }
 
     override func flagsDependencelibrarys() -> [Library] {
@@ -575,7 +602,6 @@ private class BuildMPV: BaseBuild {
             "-Diconv=enabled",
             "-Duchardet=enabled",
             "-Dvulkan=enabled",
-            "-Dmoltenvk=enabled",  // from patch option
 
             "-Djavascript=disabled",
             "-Dzimg=disabled",
@@ -583,6 +609,9 @@ private class BuildMPV: BaseBuild {
             "-Dvapoursynth=disabled",
             "-Drubberband=disabled",
         ]
+        if supportsMoltenVK() {
+            array.append("-Dmoltenvk=enabled")
+        }
         if BaseBuild.options.enableGPL {
             array.append("-Dgpl=true")
         } else {
