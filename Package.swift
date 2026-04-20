@@ -106,7 +106,7 @@ let package = Package(
 
         localBinaryTarget(
             name: "Libmpv-GPL",
-            remoteURL: "https://github.com/mpvkit/MPVKit/releases/download/0.41.0/Libmpv-GPL.xcframework.zip",
+            remoteURL: "https://github.com/yuygfgg/StarmineMPVKit/releases/download/0.41.0-starmine.1/Libmpv-GPL.xcframework.zip",
             checksum: "f766f158562f7d036bce01f2d22f4c6b94b3a9bc71e7b853daa1ada72245f1d8"
         ),
         .binaryTarget(
@@ -314,7 +314,7 @@ let package = Package(
 
         localBinaryTarget(
             name: "Libmpv",
-            remoteURL: "https://github.com/mpvkit/MPVKit/releases/download/0.41.0/Libmpv.xcframework.zip",
+            remoteURL: "https://github.com/yuygfgg/StarmineMPVKit/releases/download/0.41.0-starmine.1/Libmpv.xcframework.zip",
             checksum: "9ff5077d675a1e12bec98db167a49f46eb57dba567f40558b7758d4f12fb3ae7"
         ),
         //AUTO_GENERATE_TARGETS_END//

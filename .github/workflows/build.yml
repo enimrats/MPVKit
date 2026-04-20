@@ -12,8 +12,27 @@ jobs:
     permissions:
       contents: write
     runs-on: macos-14
+    env:
+      MPV_REPOSITORY: yuygfgg/mpv
+      MPV_REF: starmine/main
+      STARMINE_AD_REPOSITORY: yuygfgg/libstarmine_ad
+      STARMINE_AD_REF: starmine/main
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout mpv fork
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.MPV_REPOSITORY }}
+          ref: ${{ env.MPV_REF }}
+          path: Deps/mpv
+
+      - name: Checkout libstarmine_ad
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.STARMINE_AD_REPOSITORY }}
+          ref: ${{ env.STARMINE_AD_REF }}
+          path: Deps/libstarmine_ad
 
       - name: Check version to release
         uses: jannekem/run-python-script-action@v1
@@ -40,7 +59,7 @@ jobs:
 
             print(f'mpv version: {mpvVersion}')
             print(f'ffmpeg version: {ffmpegVersion}')
-            releaseVersion = '${{ github.event.inputs.version }}' or normalize_version(mpvVersion)
+            releaseVersion = '${{ github.event.inputs.version }}' or f"{normalize_version(mpvVersion)}-starmine.1"
             print(f'release version: {releaseVersion}')
             set_env('BUILD_VERSION', mpvVersion)
             set_env('RELEASE_VERSION', releaseVersion)
@@ -63,6 +82,9 @@ jobs:
           brew install ninja
           brew install rename
 
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
       - name: Setup Xcode to support visionOS
         run: |
           sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
@@ -70,7 +92,9 @@ jobs:
 
       - name: Build GPL version
         run: |
-          make build enable-gpl version=${{ env.RELEASE_VERSION }}
+          make build enable-gpl version=${{ env.RELEASE_VERSION }} \
+            mpv-source=${{ github.workspace }}/Deps/mpv \
+            starmine-ad-source=${{ github.workspace }}/Deps/libstarmine_ad
 
           cd ./dist/release
           rename 's/-all\.zip/-GPL-all\.zip/' *-all.zip
@@ -92,7 +116,9 @@ jobs:
       
       - name: Build LGPL version
         run: |
-          make build version=${{ env.RELEASE_VERSION }}
+          make build version=${{ env.RELEASE_VERSION }} \
+            mpv-source=${{ github.workspace }}/Deps/mpv \
+            starmine-ad-source=${{ github.workspace }}/Deps/libstarmine_ad
       
       
       - name: Update Package.swift
@@ -101,7 +127,7 @@ jobs:
           cp -f ./dist/release/Package.swift ./Package.swift
 
 
-          LibmpvGPL_url="https://github.com/mpvkit/MPVKit/releases/download/${{ env.RELEASE_VERSION }}/Libmpv-GPL.xcframework.zip"
+          LibmpvGPL_url="https://github.com/${{ github.repository }}/releases/download/${{ env.RELEASE_VERSION }}/Libmpv-GPL.xcframework.zip"
           LibmpvGPL_checksum=$(cat ./dist/release/Libmpv-GPL.xcframework.checksum.txt)
           sed -i '' "s#\\\(Libmpv-GPL_url)#${LibmpvGPL_url}#g" ./Package.swift
           sed -i '' "s#\\\(Libmpv-GPL_checksum)#${LibmpvGPL_checksum}#g" ./Package.swift
