@@ -21,7 +21,7 @@ Metal support only a patch version ([#7857](https://github.com/mpv-player/mpv/pu
 ### Swift Package Manager
 
 ```
-https://github.com/yuygfgg/StarmineMPVKit.git
+https://github.com/yuygfgg/MPVKit.git
 ```
 
 ### Choose which version
