@@ -41,28 +41,14 @@ make build platform=ios,macos
 # build GPL version
 make build enable-gpl
 # build against local dependency repos when maintaining the fork
-make build mpv-source=/abs/path/to/mpv starmine-ad-source=/abs/path/to/libstarmine_ad
+make build platform=ios,macos mpv-source=/abs/path/to/mpv starmine-ad-source=/abs/path/to/libstarmine_ad
 # clean all build temp files and cache
 make clean
 # see help
 make help
 ```
 
-## Consumer workflow
-
-For app developers, the intended setup is:
-
-1. Clone the main `Starmine` app repository.
-2. Open the Xcode project.
-3. Let Xcode resolve `StarmineMPVKit` as a normal remote Swift package.
-
-They should not need to clone `mpv` or `libstarmine_ad` manually.
-
-## Maintainer workflow
-
-This fork keeps `mpv` and `libstarmine_ad` as separate repos. They are only needed when you are maintaining `StarmineMPVKit` itself.
-
-The release workflow in `.github/workflows/build.yml` checks out those repos, builds `Libmpv`, and publishes release assets that the app consumes through SwiftPM.
+This custom Starmine fork currently publishes iOS and macOS artifacts only.
 
 ## Make demo app using the local build version
 

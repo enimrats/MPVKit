@@ -1275,15 +1275,18 @@ enum Utility {
     @discardableResult
     static func launch(executableURL: URL, arguments: [String], isOutput: Bool = false, currentDirectoryURL: URL? = nil, environment: [String: String] = [:]) throws -> String {
         let task = Process()
-        var environment = environment
+        var mergedEnvironment = ProcessInfo.processInfo.environment
+        environment.forEach { key, value in
+            mergedEnvironment[key] = value
+        }
         // for homebrew 1.12
         if ProcessInfo.processInfo.environment.keys.contains("HOME") {
-            environment["HOME"] = ProcessInfo.processInfo.environment["HOME"]
+            mergedEnvironment["HOME"] = ProcessInfo.processInfo.environment["HOME"]
         }
-        if !environment.keys.contains("PATH") {
-            environment["PATH"] = BaseBuild.defaultPath
+        if !mergedEnvironment.keys.contains("PATH") {
+            mergedEnvironment["PATH"] = BaseBuild.defaultPath
         }
-        task.environment = environment
+        task.environment = mergedEnvironment
 
         var outputFileHandle: FileHandle?
         var logURL: URL?
@@ -1340,7 +1343,7 @@ enum Utility {
         }
     
         task.arguments = arguments
-        var log = executableURL.path + " " + arguments.joined(separator: " ") + " environment: " + environment.description
+        var log = executableURL.path + " " + arguments.joined(separator: " ") + " environment: " + mergedEnvironment.description
         if let currentDirectoryURL {
             log += " url: \(currentDirectoryURL)"
         }
