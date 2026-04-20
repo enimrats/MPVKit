@@ -36,6 +36,7 @@ do {
     // mpv
     try BuildUchardet().buildALL()
     try BuildLuaJIT().buildALL()
+    try BuildStarmineAd.maybeBuildAll()
     try BuildMPV().buildALL()
 } catch {
     print(error.localizedDescription)
@@ -367,9 +368,194 @@ enum Library: String, CaseIterable {
 }
 
 
+private final class BuildStarmineAd {
+    static let artifactName = "starmine_ad"
+
+    static func maybeBuildAll() throws {
+        guard let builder = try BuildStarmineAd() else {
+            return
+        }
+        try builder.buildALL()
+    }
+
+    static func thinDir(platform: PlatformType, arch: ArchType) -> URL {
+        URL.currentDirectory + [artifactName, platform.rawValue, "thin", arch.rawValue]
+    }
+
+    private let sourceURL: URL
+    private let cargoTargetDir: URL
+    private let cargoPath: String
+    private let rustupPath: String
+
+    init?() throws {
+        let configuredPath = BaseBuild.options.localStarmineAdSource
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        if configuredPath.isEmpty {
+            return nil
+        }
+
+        sourceURL = URL(fileURLWithPath: configuredPath).standardizedFileURL
+        cargoTargetDir = URL.currentDirectory + "starmine_ad-target"
+        cargoPath = try Self.requiredExecutable("cargo")
+        rustupPath = try Self.requiredExecutable("rustup")
+
+        let manifest = sourceURL + "Cargo.toml"
+        let includeDir = sourceURL + "include"
+        guard FileManager.default.fileExists(atPath: manifest.path) else {
+            throw NSError(domain: "missing Cargo.toml at \(manifest.path)", code: 1)
+        }
+        guard FileManager.default.fileExists(atPath: includeDir.path) else {
+            throw NSError(domain: "missing include directory at \(includeDir.path)", code: 1)
+        }
+    }
+
+    private static func requiredExecutable(_ name: String) throws -> String {
+        guard let resolved = Utility.shell("which \(name)", isOutput: true)?
+            .trimmingCharacters(in: .whitespacesAndNewlines),
+              !resolved.isEmpty else
+        {
+            throw NSError(domain: "\(name) not found in PATH", code: 1)
+        }
+        return resolved
+    }
+
+    private func buildALL() throws {
+        for platform in BaseBuild.platforms {
+            for arch in platform.architectures {
+                try build(platform: platform, arch: arch)
+            }
+        }
+    }
+
+    private func build(platform: PlatformType, arch: ArchType) throws {
+        let targetTriple = try rustTarget(platform: platform, arch: arch)
+        try ensureRustTargetInstalled(targetTriple)
+
+        let manifest = sourceURL + "Cargo.toml"
+        var environment = ProcessInfo.processInfo.environment
+        environment["PATH"] = BaseBuild.defaultPath + ":" + (environment["PATH"] ?? "")
+        environment["CARGO_TARGET_DIR"] = cargoTargetDir.path
+
+        try Utility.launch(
+            path: cargoPath,
+            arguments: [
+                "build",
+                "--manifest-path", manifest.path,
+                "--package", "libstarmine_ad",
+                "--lib",
+                "--release",
+                "--target", targetTriple,
+            ],
+            currentDirectoryURL: sourceURL,
+            environment: environment
+        )
+
+        let builtLibrary = cargoTargetDir + [targetTriple, "release", "libstarmine_ad.a"]
+        guard FileManager.default.fileExists(atPath: builtLibrary.path) else {
+            throw NSError(domain: "missing libstarmine_ad artifact at \(builtLibrary.path)", code: 1)
+        }
+
+        let thinDir = Self.thinDir(platform: platform, arch: arch)
+        let includeDir = thinDir + "include"
+        let libDir = thinDir + "lib"
+        try? FileManager.default.removeItem(at: thinDir)
+        try FileManager.default.createDirectory(at: thinDir, withIntermediateDirectories: true, attributes: nil)
+        try FileManager.default.createDirectory(at: libDir, withIntermediateDirectories: true, attributes: nil)
+
+        try FileManager.default.copyItem(at: sourceURL + "include", to: includeDir)
+        try FileManager.default.copyItem(at: builtLibrary, to: libDir + "libstarmine_ad.a")
+    }
+
+    private func ensureRustTargetInstalled(_ targetTriple: String) throws {
+        let installedTargets = try Utility.launch(
+            path: rustupPath,
+            arguments: ["target", "list", "--installed"],
+            isOutput: true
+        )
+        let installed = installedTargets
+            .split(whereSeparator: \.isNewline)
+            .map(String.init)
+        if !installed.contains(targetTriple) {
+            try Utility.launch(path: rustupPath, arguments: ["target", "add", targetTriple])
+        }
+    }
+
+    private func rustTarget(platform: PlatformType, arch: ArchType) throws -> String {
+        switch (platform, arch) {
+        case (.macos, .arm64):
+            return "aarch64-apple-darwin"
+        case (.macos, .x86_64):
+            return "x86_64-apple-darwin"
+        case (.ios, .arm64):
+            return "aarch64-apple-ios"
+        case (.isimulator, .arm64):
+            return "aarch64-apple-ios-sim"
+        case (.isimulator, .x86_64):
+            return "x86_64-apple-ios"
+        case (.maccatalyst, .arm64):
+            return "aarch64-apple-ios-macabi"
+        case (.maccatalyst, .x86_64):
+            return "x86_64-apple-ios-macabi"
+        default:
+            throw NSError(
+                domain: "libstarmine_ad build is only wired for macOS/iOS targets; unsupported platform \(platform.rawValue) arch \(arch.rawValue)",
+                code: 1
+            )
+        }
+    }
+}
+
+
 private class BuildMPV: BaseBuild {
     init() {
         super.init(library: .libmpv)
+    }
+
+    override func beforeBuild() throws {
+        let localMPVSource = BaseBuild.options.localMPVSource
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        if localMPVSource.isEmpty {
+            try super.beforeBuild()
+            return
+        }
+
+        let localStarmineAdSource = BaseBuild.options.localStarmineAdSource
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !localStarmineAdSource.isEmpty else {
+            throw NSError(domain: "mpv-source requires starmine-ad-source for the custom Starmine fork", code: 1)
+        }
+
+        let sourceURL = URL(fileURLWithPath: localMPVSource).standardizedFileURL
+        let mesonBuild = sourceURL + "meson.build"
+        guard FileManager.default.fileExists(atPath: mesonBuild.path) else {
+            throw NSError(domain: "missing mpv source tree at \(sourceURL.path)", code: 1)
+        }
+
+        try? FileManager.default.removeItem(at: directoryURL)
+        try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true, attributes: nil)
+        try Utility.launch(
+            path: "/usr/bin/rsync",
+            arguments: [
+                "-a",
+                "--delete",
+                "--exclude", ".git",
+                "--exclude", ".DS_Store",
+                "\(sourceURL.path)/",
+                "\(directoryURL.path)/",
+            ]
+        )
+
+        let patch = URL.currentDirectory + "../Sources/BuildScripts/patch/\(library.rawValue)"
+        if FileManager.default.fileExists(atPath: patch.path) {
+            let fileNames = try FileManager.default.contentsOfDirectory(atPath: patch.path).sorted()
+            for fileName in fileNames where fileName.hasSuffix(".patch") {
+                try Utility.launch(
+                    path: "/usr/bin/git",
+                    arguments: ["apply", "\((patch + fileName).path)"],
+                    currentDirectoryURL: directoryURL
+                )
+            }
+        }
     }
 
     override func flagsDependencelibrarys() -> [Library] {
@@ -410,6 +596,13 @@ private class BuildMPV: BaseBuild {
         }
         if !(platform == .macos && arch.executable) {
             array.append("-Dcplayer=false")
+        }
+        let localStarmineAdSource = BaseBuild.options.localStarmineAdSource
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        if !localStarmineAdSource.isEmpty {
+            let thinDir = BuildStarmineAd.thinDir(platform: platform, arch: arch)
+            array.append("-Dstarmine-ad-incdir=\((thinDir + "include").path)")
+            array.append("-Dstarmine-ad-libdir=\((thinDir + "lib").path)")
         }
         if platform == .macos {
             array.append("-Dswift-flags=-sdk \(platform.isysroot) -target \(platform.deploymentTarget(arch))")

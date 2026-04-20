@@ -1,6 +1,19 @@
 // swift-tools-version:5.8
 
+import Foundation
 import PackageDescription
+
+private let repoRoot = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+
+private func localBinaryTarget(name: String, remoteURL: String, checksum: String) -> Target {
+    let localPath = repoRoot
+        .appendingPathComponent("dist/release/\(name).xcframework")
+        .path
+    if FileManager.default.fileExists(atPath: localPath) {
+        return .binaryTarget(name: name, path: localPath)
+    }
+    return .binaryTarget(name: name, url: remoteURL, checksum: checksum)
+}
 
 let package = Package(
     name: "MPVKit",
@@ -91,9 +104,9 @@ let package = Package(
             ]
         ),
 
-        .binaryTarget(
+        localBinaryTarget(
             name: "Libmpv-GPL",
-            url: "https://github.com/mpvkit/MPVKit/releases/download/0.41.0/Libmpv-GPL.xcframework.zip",
+            remoteURL: "https://github.com/mpvkit/MPVKit/releases/download/0.41.0/Libmpv-GPL.xcframework.zip",
             checksum: "f766f158562f7d036bce01f2d22f4c6b94b3a9bc71e7b853daa1ada72245f1d8"
         ),
         .binaryTarget(
@@ -299,9 +312,9 @@ let package = Package(
             checksum: "8e76f267ee100ff5f3bbde7641b2240566df722241cdf8e135be7ef3d29e237a"
         ),
 
-        .binaryTarget(
+        localBinaryTarget(
             name: "Libmpv",
-            url: "https://github.com/mpvkit/MPVKit/releases/download/0.41.0/Libmpv.xcframework.zip",
+            remoteURL: "https://github.com/mpvkit/MPVKit/releases/download/0.41.0/Libmpv.xcframework.zip",
             checksum: "9ff5077d675a1e12bec98db167a49f46eb57dba567f40558b7758d4f12fb3ae7"
         ),
         //AUTO_GENERATE_TARGETS_END//

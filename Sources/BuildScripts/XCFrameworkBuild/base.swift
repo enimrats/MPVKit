@@ -36,6 +36,8 @@ class ArgumentOptions {
     var enableGPL: Bool = false
     var platforms : [PlatformType] = []
     var releaseVersion: String = "0.0.0"
+    var localMPVSource: String = ProcessInfo.processInfo.environment["STARMINE_MPV_SOURCE"] ?? ""
+    var localStarmineAdSource: String = ProcessInfo.processInfo.environment["STARMINE_AD_SOURCE"] ?? ""
 
     init() {
         self.arguments = []
@@ -82,6 +84,12 @@ class ArgumentOptions {
                             }
                         }
                     }
+                }
+                if argument.hasPrefix("mpv-source=") {
+                    options.localMPVSource = String(argument.suffix(argument.count - "mpv-source=".count))
+                }
+                if argument.hasPrefix("starmine-ad-source=") {
+                    options.localStarmineAdSource = String(argument.suffix(argument.count - "starmine-ad-source=".count))
                 }
             }
         }
@@ -1445,4 +1453,3 @@ extension URL {
         return url
     }
 }
-
