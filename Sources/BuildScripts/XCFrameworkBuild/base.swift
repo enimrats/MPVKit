@@ -397,6 +397,7 @@ class BaseBuild {
         try? FileManager.default.removeItem(at: frameworkDir)
         try FileManager.default.createDirectory(at: frameworkDir, withIntermediateDirectories: true, attributes: nil)
         var arguments = ["-create"]
+        var usesDynamicLibrary = false
         for arch in platform.architectures {
             let prefix = thinDir(platform: platform, arch: arch)
             if !FileManager.default.fileExists(atPath: prefix.path) {
@@ -406,6 +407,7 @@ class BaseBuild {
             var libPath = prefix + ["lib", "\(libname).a"]
             if !FileManager.default.fileExists(atPath: libPath.path) {
                 libPath = prefix + ["lib", "\(libname).dylib"]
+                usesDynamicLibrary = true
             }
             arguments.append(libPath.path)
             var headerURL: URL = prefix + "include" + framework
@@ -417,6 +419,9 @@ class BaseBuild {
         arguments.append("-output")
         arguments.append((frameworkDir + framework).path)
         try Utility.launch(path: "/usr/bin/lipo", arguments: arguments)
+        if usesDynamicLibrary {
+            try updateFrameworkInstallName(framework: framework, platform: platform, binaryURL: frameworkDir + framework)
+        }
         try FileManager.default.createDirectory(at: frameworkDir + "Modules", withIntermediateDirectories: true, attributes: nil)
         var modulemap = """
         framework module \(framework) [system] {
@@ -440,6 +445,16 @@ class BaseBuild {
         createPlist(path: frameworkDir.path + "/Info.plist", name: framework, minVersion: "100.0", platform: platform.sdk)
         try fixShallowBundles(framework: framework, platform: platform, frameworkDir: frameworkDir)
         return frameworkDir.path
+    }
+
+    private func updateFrameworkInstallName(framework: String, platform: PlatformType, binaryURL: URL) throws {
+        let installName: String
+        if platform == .macos {
+            installName = "@rpath/\(framework).framework/Versions/A/\(framework)"
+        } else {
+            installName = "@rpath/\(framework).framework/\(framework)"
+        }
+        try Utility.launch(path: "/usr/bin/install_name_tool", arguments: ["-id", installName, binaryURL.path])
     }
 
     // Fix shallow bundles for Xcode 26, only for macOS frameworks
