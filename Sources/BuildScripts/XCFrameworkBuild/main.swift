@@ -623,9 +623,7 @@ private class BuildMPV: BaseBuild {
         } else {
             array.append("-Dlibbluray=disabled")
         }
-        if !(platform == .macos && arch.executable) {
-            array.append("-Dcplayer=false")
-        }
+        array.append("-Dcplayer=false")
         let localStarmineAdSource = BaseBuild.options.localStarmineAdSource
             .trimmingCharacters(in: .whitespacesAndNewlines)
         if !localStarmineAdSource.isEmpty {
