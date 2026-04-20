@@ -97,43 +97,43 @@ let package = Package(
 
         .binaryTarget(
             name: "Libmpv-GPL",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libmpv-GPL.xcframework.zip",
-            checksum: "8d8a304a2f26d617539217c4edf31ef7ccc143137fe937615f6c143a10fde76a"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libmpv-GPL.xcframework.zip",
+            checksum: "ca93087d277c833ab6d3d618d3cca8bf2f5d8975c7bf7c3fdb72903c3c58590b"
         ),
         .binaryTarget(
             name: "Libavcodec-GPL",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libavcodec-GPL.xcframework.zip",
-            checksum: "1586a6a543c003961fdaa55f6ad1064bbe105dfd09f8c9719a291905c8475fba"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libavcodec-GPL.xcframework.zip",
+            checksum: "8ff2321098a5e492b233e8354a314ad7fbec51d81a31ff0d089ce7d8d2c2daeb"
         ),
         .binaryTarget(
             name: "Libavdevice-GPL",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libavdevice-GPL.xcframework.zip",
-            checksum: "ebc0551154863f4539120bf1116c8af99e95641235d01c6c7edbcc5a3d1ff902"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libavdevice-GPL.xcframework.zip",
+            checksum: "71cf798de0155a0f8ed2e2385dea6b1e2e9a5d25882b93f38dab148994cd0bd7"
         ),
         .binaryTarget(
             name: "Libavformat-GPL",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libavformat-GPL.xcframework.zip",
-            checksum: "83b5b127ba1e4c5c9f505871ecff27d58965b6f58a41ef1eef2412c035c71510"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libavformat-GPL.xcframework.zip",
+            checksum: "5b74bc1c0ffc6ed9b124ae34ee1a210dd396c117ca5a80b4a50dab488a690f69"
         ),
         .binaryTarget(
             name: "Libavfilter-GPL",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libavfilter-GPL.xcframework.zip",
-            checksum: "668e8d0759458d8a53d9e7ade6a453dc77cead3f8835ea372586800a91cca08a"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libavfilter-GPL.xcframework.zip",
+            checksum: "55e672f0eaa81ca81ae66a980d82fc945091f46251be7a54c766d5a42ff1c3f1"
         ),
         .binaryTarget(
             name: "Libavutil-GPL",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libavutil-GPL.xcframework.zip",
-            checksum: "9012ddf7ace5fcfe40fc8bad982048226a3f335ab28a50f48469008b40c73b97"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libavutil-GPL.xcframework.zip",
+            checksum: "32754d91d845489d0bc4280cd6a043076ba143e56f0d707d6d105aa44c548d94"
         ),
         .binaryTarget(
             name: "Libswresample-GPL",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libswresample-GPL.xcframework.zip",
-            checksum: "f95071c8d2ea86d8e11947eafb79c64112b02a175a5a77dc7818aaafe9a46196"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libswresample-GPL.xcframework.zip",
+            checksum: "efb04d9c2d5bd7908897110e2959308d7406756f051926f58c91c119ea486241"
         ),
         .binaryTarget(
             name: "Libswscale-GPL",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libswscale-GPL.xcframework.zip",
-            checksum: "ce56135fb4af6988f446b58e1b580cae526ab271f816dd79cf49e7a47102a0ba"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libswscale-GPL.xcframework.zip",
+            checksum: "781be85e9cc88c912b67e1db558873c0b635cc93e748753fe9807af2d17c29a5"
         ),
         //AUTO_GENERATE_TARGETS_BEGIN//
 
@@ -257,38 +257,38 @@ let package = Package(
 
         .binaryTarget(
             name: "Libavcodec",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libavcodec.xcframework.zip",
-            checksum: "d624c46f79008f1eec0f9e9e65433d1e3c93cc97a653658158c62384a6f7e6e3"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libavcodec.xcframework.zip",
+            checksum: "25a39e7cf9e2a257b41c1886bd8b0550dc4b94034b780cf2d2158a807af1d78f"
         ),
         .binaryTarget(
             name: "Libavdevice",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libavdevice.xcframework.zip",
-            checksum: "9494b5f7098a6fb41ac42dd6585771c35c068a805c5a331bb7bbf338c7ce982b"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libavdevice.xcframework.zip",
+            checksum: "aa4e635afeedd792de5ada1302a409897ac9c6121a430656a30e45c5999b3609"
         ),
         .binaryTarget(
             name: "Libavformat",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libavformat.xcframework.zip",
-            checksum: "63d7bc5b66857bbadb3c6258f00dd9428f5f46aaf12c195f2d5bfcc8acb8f00a"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libavformat.xcframework.zip",
+            checksum: "26b5df92bc1865bf22c305384f18fa360b39c3e55143bf1148cbb8b3a672961d"
         ),
         .binaryTarget(
             name: "Libavfilter",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libavfilter.xcframework.zip",
-            checksum: "0ceb61c4ea400383fe2647ab8ddef8a682f0992cd498bfc3be380c43e723aeab"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libavfilter.xcframework.zip",
+            checksum: "1b1c4468f26dc424e842326603bf00cf14e0c4c1e0466b2851a01b9c8a963feb"
         ),
         .binaryTarget(
             name: "Libavutil",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libavutil.xcframework.zip",
-            checksum: "5bfde4ed582849de0dd6fc4c48ab92b1dc705683597d10df728eca9c35d965d2"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libavutil.xcframework.zip",
+            checksum: "c9d6af06d3810a3530f26587384de62137ad17fe31d2c723d1f357aec2d5a71b"
         ),
         .binaryTarget(
             name: "Libswresample",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libswresample.xcframework.zip",
-            checksum: "ec9f119038fd5369e67b10e9d2993496b3b8714567a00a94baa3928e65da9a1b"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libswresample.xcframework.zip",
+            checksum: "beefd946fe84d59cbbe749a29c330f500200c1ac9c1736fb89b85070f61f1216"
         ),
         .binaryTarget(
             name: "Libswscale",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libswscale.xcframework.zip",
-            checksum: "8f69f3f31bc24a852e8ea0efee7fe2f3bb61c33d0271b7612ca93f4489eab004"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libswscale.xcframework.zip",
+            checksum: "707b26e580cd49edb9ee3282d44ef5df8d1637b65013642b11e703586df0ef5c"
         ),
 
         .binaryTarget(
@@ -305,14 +305,14 @@ let package = Package(
 
         .binaryTarget(
             name: "Libstarmine_ad",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libstarmine_ad.xcframework.zip",
-            checksum: "55752651c0e5e18d5a166cddaaf527ad1d6a0888d32406271adb7c8f15fd5576"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libstarmine_ad.xcframework.zip",
+            checksum: "57b38db122389fbdef2211cca2c80e96803e445e5c47c8d7a63dc54f505d5257"
         ),
 
         .binaryTarget(
             name: "Libmpv",
-            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.3/Libmpv.xcframework.zip",
-            checksum: "91296ecd6788adf98832e494c6a93d9551c398b3a2608f43828d7fcf03834a92"
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.4/Libmpv.xcframework.zip",
+            checksum: "36554242ef13c2efef8d1a04795d05aec49530d800dae43719e61424848e5dba"
         ),
         //AUTO_GENERATE_TARGETS_END//
     ]
