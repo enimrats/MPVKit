@@ -144,7 +144,7 @@ enum Library: String, CaseIterable {
         case .libuavs3d:
             return "https://github.com/mpvkit/libuavs3d-build/releases/download/\(self.version)/libuavs3d-all.zip"
         case .starmineAd:
-            return "https://github.com/yuygfgg/libstarmine_ad"
+            return "https://github.com/enimrats/libstarmine_ad"
         }
     }
 
@@ -155,7 +155,7 @@ enum Library: String, CaseIterable {
             return [
                 .target(
                     name: "Libmpv",
-                    url: "https://github.com/yuygfgg/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libmpv.xcframework.zip",
+                    url: "https://github.com/enimrats/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libmpv.xcframework.zip",
                     checksum: ""
                 ),
             ]
@@ -163,37 +163,37 @@ enum Library: String, CaseIterable {
             return  [
                 .target(
                     name: "Libavcodec",
-                    url: "https://github.com/yuygfgg/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libavcodec.xcframework.zip",
+                    url: "https://github.com/enimrats/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libavcodec.xcframework.zip",
                     checksum: ""
                 ),
                 .target(
                     name: "Libavdevice",
-                    url: "https://github.com/yuygfgg/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libavdevice.xcframework.zip",
+                    url: "https://github.com/enimrats/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libavdevice.xcframework.zip",
                     checksum: ""
                 ),
                 .target(
                     name: "Libavformat",
-                    url: "https://github.com/yuygfgg/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libavformat.xcframework.zip",
+                    url: "https://github.com/enimrats/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libavformat.xcframework.zip",
                     checksum: ""
                 ),
                 .target(
                     name: "Libavfilter",
-                    url: "https://github.com/yuygfgg/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libavfilter.xcframework.zip",
+                    url: "https://github.com/enimrats/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libavfilter.xcframework.zip",
                     checksum: ""
                 ),
                 .target(
                     name: "Libavutil",
-                    url: "https://github.com/yuygfgg/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libavutil.xcframework.zip",
+                    url: "https://github.com/enimrats/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libavutil.xcframework.zip",
                     checksum: ""
                 ),
                 .target(
                     name: "Libswresample",
-                    url: "https://github.com/yuygfgg/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libswresample.xcframework.zip",
+                    url: "https://github.com/enimrats/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libswresample.xcframework.zip",
                     checksum: ""
                 ),
                 .target(
                     name: "Libswscale",
-                    url: "https://github.com/yuygfgg/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libswscale.xcframework.zip",
+                    url: "https://github.com/enimrats/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libswscale.xcframework.zip",
                     checksum: ""
                 ),
             ]
@@ -371,7 +371,7 @@ enum Library: String, CaseIterable {
             return [
                 .target(
                     name: "Libstarmine_ad",
-                    url: "https://github.com/yuygfgg/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libstarmine_ad.xcframework.zip",
+                    url: "https://github.com/enimrats/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libstarmine_ad.xcframework.zip",
                     checksum: ""
                 ),
             ]

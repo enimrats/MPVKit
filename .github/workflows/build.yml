@@ -13,9 +13,9 @@ jobs:
       contents: write
     runs-on: macos-14
     env:
-      MPV_REPOSITORY: yuygfgg/mpv
+      MPV_REPOSITORY: enimrats/mpv
       MPV_REF: starmine/main
-      STARMINE_AD_REPOSITORY: yuygfgg/libstarmine_ad
+      STARMINE_AD_REPOSITORY: enimrats/libstarmine_ad
       STARMINE_AD_REF: starmine/main
     steps:
       - uses: actions/checkout@v4
