@@ -303,13 +303,8 @@ let package = Package(
 
         .binaryTarget(
             name: "Libmpv",
-<<<<<<< HEAD
-            url: "https://github.com/yuygfgg/StarmineMPVKit/releases/download/0.41.0-starmine.1/Libmpv.xcframework.zip",
-            checksum: "0d06576a0ce5af3edde60734f22d1dd9c3e42eec2dfaa6b17ec1ec6e27fd9204"
-=======
-            remoteURL: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.1/Libmpv.xcframework.zip",
+            url: "https://github.com/yuygfgg/MPVKit/releases/download/0.41.0-starmine.1/Libmpv.xcframework.zip",
             checksum: "9ff5077d675a1e12bec98db167a49f46eb57dba567f40558b7758d4f12fb3ae7"
->>>>>>> 3216726 (Starmine: export MPVKit module for app integration)
         ),
         //AUTO_GENERATE_TARGETS_END//
     ]
