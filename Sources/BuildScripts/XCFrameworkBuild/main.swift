@@ -45,7 +45,7 @@ do {
 
 
 enum Library: String, CaseIterable {
-    case libmpv, FFmpeg, libshaderc, vulkan, lcms2, libdovi, openssl, libunibreak, libfreetype, libfribidi, libharfbuzz, libass, libsmbclient, libplacebo, libdav1d, gmp, nettle, gnutls, libuchardet, libbluray, libluajit, libuavs3d
+    case libmpv, FFmpeg, libshaderc, vulkan, lcms2, libdovi, openssl, libunibreak, libfreetype, libfribidi, libharfbuzz, libass, libsmbclient, libplacebo, libdav1d, gmp, nettle, gnutls, libuchardet, libbluray, libluajit, libuavs3d, starmineAd = "starmine_ad"
     var version: String {
         switch self {
         case .libmpv:
@@ -92,6 +92,8 @@ enum Library: String, CaseIterable {
             return "2.1.0-xcode"
         case .libuavs3d:
             return "1.2.1-xcode"
+        case .starmineAd:
+            return BaseBuild.options.releaseVersion
         }
     }
 
@@ -141,6 +143,8 @@ enum Library: String, CaseIterable {
             return "https://github.com/mpvkit/libluajit-build/releases/download/\(self.version)/libluajit-all.zip"
         case .libuavs3d:
             return "https://github.com/mpvkit/libuavs3d-build/releases/download/\(self.version)/libuavs3d-all.zip"
+        case .starmineAd:
+            return "https://github.com/yuygfgg/libstarmine_ad"
         }
     }
 
@@ -363,12 +367,20 @@ enum Library: String, CaseIterable {
                     checksum: "https://github.com/mpvkit/libuavs3d-build/releases/download/\(self.version)/Libuavs3d.xcframework.checksum.txt"
                 ),
             ]
+        case .starmineAd:
+            return [
+                .target(
+                    name: "Libstarmine_ad",
+                    url: "https://github.com/yuygfgg/MPVKit/releases/download/\(BaseBuild.options.releaseVersion)/Libstarmine_ad.xcframework.zip",
+                    checksum: ""
+                ),
+            ]
         }
     }
 }
 
 
-private final class BuildStarmineAd {
+private final class BuildStarmineAd: BaseBuild {
     static let artifactName = "starmine_ad"
 
     static func maybeBuildAll() throws {
@@ -398,6 +410,7 @@ private final class BuildStarmineAd {
         cargoTargetDir = URL.currentDirectory + "starmine_ad-target"
         cargoPath = try Self.requiredExecutable("cargo")
         rustupPath = try Self.requiredExecutable("rustup")
+        super.init(library: .starmineAd)
 
         let manifest = sourceURL + "Cargo.toml"
         let includeDir = sourceURL + "include"
@@ -419,15 +432,45 @@ private final class BuildStarmineAd {
         return resolved
     }
 
-    private func buildALL() throws {
-        for platform in BaseBuild.platforms {
-            for arch in platform.architectures {
-                try build(platform: platform, arch: arch)
-            }
-        }
+    override func beforeBuild() throws {
+        // BuildStarmineAd consumes a caller-provided local source tree instead of cloning a repo.
     }
 
-    private func build(platform: PlatformType, arch: ArchType) throws {
+    override func frameworks() throws -> [String] {
+        ["libstarmine_ad"]
+    }
+
+    override func createXCFramework() throws {
+        try? FileManager.default.createDirectory(at: self.xcframeworkDirectoryURL, withIntermediateDirectories: true, attributes: nil)
+        try? Utility.removeFiles(extensions: [".xcframework"], currentDirectoryURL: self.xcframeworkDirectoryURL)
+
+        var arguments = ["-create-xcframework"]
+        for platform in BaseBuild.platforms {
+            guard let libraryPath = try universalLibrary(platform: platform) else {
+                continue
+            }
+            let firstArch = architectures(platform).first!
+            let headersPath = thinDir(platform: platform, arch: firstArch) + "include"
+            arguments.append("-library")
+            arguments.append(libraryPath.path)
+            arguments.append("-headers")
+            arguments.append(headersPath.path)
+        }
+
+        guard arguments.count > 1 else {
+            return
+        }
+
+        let output = self.xcframeworkDirectoryURL + ["Libstarmine_ad.xcframework"]
+        if FileManager.default.fileExists(atPath: output.path) {
+            try? FileManager.default.removeItem(at: output)
+        }
+        arguments.append("-output")
+        arguments.append(output.path)
+        try Utility.launch(path: "/usr/bin/xcodebuild", arguments: arguments)
+    }
+
+    override func build(platform: PlatformType, arch: ArchType) throws {
         let targetTriple = try rustTarget(platform: platform, arch: arch)
         try ensureRustTargetInstalled(targetTriple)
 
@@ -464,6 +507,31 @@ private final class BuildStarmineAd {
 
         try FileManager.default.copyItem(at: sourceURL + "include", to: includeDir)
         try FileManager.default.copyItem(at: builtLibrary, to: libDir + "libstarmine_ad.a")
+    }
+
+    private func universalLibrary(platform: PlatformType) throws -> URL? {
+        let archLibraries = architectures(platform).compactMap { arch -> URL? in
+            let library = thinDir(platform: platform, arch: arch) + ["lib", "libstarmine_ad.a"]
+            return FileManager.default.fileExists(atPath: library.path) ? library : nil
+        }
+        guard let firstLibrary = archLibraries.first else {
+            return nil
+        }
+        if archLibraries.count == 1 {
+            return firstLibrary
+        }
+
+        let universalDir = URL.currentDirectory + [library.rawValue, platform.rawValue, "universal"]
+        try? FileManager.default.removeItem(at: universalDir)
+        try FileManager.default.createDirectory(at: universalDir, withIntermediateDirectories: true, attributes: nil)
+
+        let output = universalDir + "libstarmine_ad.a"
+        var arguments = ["-create"]
+        arguments.append(contentsOf: archLibraries.map(\.path))
+        arguments.append("-output")
+        arguments.append(output.path)
+        try Utility.launch(path: "/usr/bin/lipo", arguments: arguments)
+        return output
     }
 
     private func ensureRustTargetInstalled(_ targetTriple: String) throws {

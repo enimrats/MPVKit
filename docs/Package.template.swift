@@ -8,7 +8,7 @@ let package = Package(
     products: [
         .library(
             name: "MPVKit",
-            targets: ["_MPVKit"]
+            targets: ["MPVKit"]
         ),
         .library(
             name: "MPVKit-GPL",
@@ -17,12 +17,15 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "_MPVKit",
+            name: "MPVKit",
             dependencies: [
                 "Libmpv", "_FFmpeg", "Libuchardet", "Libbluray",
                 .target(name: "Libluajit", condition: .when(platforms: [.macOS])),
+                .target(name: "Libstarmine_ad", condition: .when(platforms: [.macOS, .iOS])),
             ],
             path: "Sources/_MPVKit",
+            exclude: ["dummy.c", "include"],
+            sources: ["Exports.swift"],
             linkerSettings: [
                 .linkedFramework("AVFoundation"),
                 .linkedFramework("CoreAudio"),
@@ -58,6 +61,7 @@ let package = Package(
             dependencies: [
                 "Libmpv-GPL", "_FFmpeg-GPL", "Libuchardet", "Libbluray",
                 .target(name: "Libluajit", condition: .when(platforms: [.macOS])),
+                .target(name: "Libstarmine_ad", condition: .when(platforms: [.macOS, .iOS])),
             ],
             path: "Sources/_MPVKit-GPL",
             linkerSettings: [
