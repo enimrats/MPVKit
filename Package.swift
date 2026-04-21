@@ -97,43 +97,43 @@ let package = Package(
 
         .binaryTarget(
             name: "Libmpv-GPL",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libmpv-GPL.xcframework.zip",
-            checksum: "ca93087d277c833ab6d3d618d3cca8bf2f5d8975c7bf7c3fdb72903c3c58590b"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libmpv-GPL.xcframework.zip",
+            checksum: "1370358e84e466f920319f35ae191012bdde367d1f7f0958a3d61b2c9b5fc439"
         ),
         .binaryTarget(
             name: "Libavcodec-GPL",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libavcodec-GPL.xcframework.zip",
-            checksum: "8ff2321098a5e492b233e8354a314ad7fbec51d81a31ff0d089ce7d8d2c2daeb"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libavcodec-GPL.xcframework.zip",
+            checksum: "3ddc434e34b728063c206fe99ade8eabc5276d423f97b3f854357669e092e328"
         ),
         .binaryTarget(
             name: "Libavdevice-GPL",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libavdevice-GPL.xcframework.zip",
-            checksum: "71cf798de0155a0f8ed2e2385dea6b1e2e9a5d25882b93f38dab148994cd0bd7"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libavdevice-GPL.xcframework.zip",
+            checksum: "c3741db8032d3e041c6d6376efdae0dfc5830fef55298cbeeb9a809e4e7a6585"
         ),
         .binaryTarget(
             name: "Libavformat-GPL",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libavformat-GPL.xcframework.zip",
-            checksum: "5b74bc1c0ffc6ed9b124ae34ee1a210dd396c117ca5a80b4a50dab488a690f69"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libavformat-GPL.xcframework.zip",
+            checksum: "f956a17bb88de4bb55cb79eeaf3b8317e095e57af2ae0cb41408de1bc80d8d61"
         ),
         .binaryTarget(
             name: "Libavfilter-GPL",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libavfilter-GPL.xcframework.zip",
-            checksum: "55e672f0eaa81ca81ae66a980d82fc945091f46251be7a54c766d5a42ff1c3f1"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libavfilter-GPL.xcframework.zip",
+            checksum: "bccf0a6fe5c752211218b3e8260dc3a4a660643c6f710d954ea2daa0a24d60e4"
         ),
         .binaryTarget(
             name: "Libavutil-GPL",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libavutil-GPL.xcframework.zip",
-            checksum: "32754d91d845489d0bc4280cd6a043076ba143e56f0d707d6d105aa44c548d94"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libavutil-GPL.xcframework.zip",
+            checksum: "5cd70b6a2bdd36bfec62d4d295addccb438b728f52b52b1762bce5961507c875"
         ),
         .binaryTarget(
             name: "Libswresample-GPL",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libswresample-GPL.xcframework.zip",
-            checksum: "efb04d9c2d5bd7908897110e2959308d7406756f051926f58c91c119ea486241"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libswresample-GPL.xcframework.zip",
+            checksum: "0128d663092d7831b961efccd908ccb0df4ab5c89e1e7501a1dc4d9a2dbf2dd8"
         ),
         .binaryTarget(
             name: "Libswscale-GPL",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libswscale-GPL.xcframework.zip",
-            checksum: "781be85e9cc88c912b67e1db558873c0b635cc93e748753fe9807af2d17c29a5"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libswscale-GPL.xcframework.zip",
+            checksum: "21b58314acb391d9346a003d9dd42e45485e30c596154d97542336f8c6fedffa"
         ),
         //AUTO_GENERATE_TARGETS_BEGIN//
 
@@ -257,38 +257,38 @@ let package = Package(
 
         .binaryTarget(
             name: "Libavcodec",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libavcodec.xcframework.zip",
-            checksum: "25a39e7cf9e2a257b41c1886bd8b0550dc4b94034b780cf2d2158a807af1d78f"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libavcodec.xcframework.zip",
+            checksum: "190e5a94e6b992ba8690a07475099092b2a9cba50eed6dc8115ca61cfee7e7ea"
         ),
         .binaryTarget(
             name: "Libavdevice",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libavdevice.xcframework.zip",
-            checksum: "aa4e635afeedd792de5ada1302a409897ac9c6121a430656a30e45c5999b3609"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libavdevice.xcframework.zip",
+            checksum: "87f3891aee5d3ce0fd05a97d5dc21bae61c5cf190ed3c0f3e048e3272a722dab"
         ),
         .binaryTarget(
             name: "Libavformat",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libavformat.xcframework.zip",
-            checksum: "26b5df92bc1865bf22c305384f18fa360b39c3e55143bf1148cbb8b3a672961d"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libavformat.xcframework.zip",
+            checksum: "e003a298c48cef6c4a6bc8e4a59cff4c03a333ef6ed02fb865e3e6fa542477ab"
         ),
         .binaryTarget(
             name: "Libavfilter",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libavfilter.xcframework.zip",
-            checksum: "1b1c4468f26dc424e842326603bf00cf14e0c4c1e0466b2851a01b9c8a963feb"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libavfilter.xcframework.zip",
+            checksum: "b50614e183783cb96e49bf7ae02d730fef64a1b85d4d8ec37927f8b1e6198967"
         ),
         .binaryTarget(
             name: "Libavutil",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libavutil.xcframework.zip",
-            checksum: "c9d6af06d3810a3530f26587384de62137ad17fe31d2c723d1f357aec2d5a71b"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libavutil.xcframework.zip",
+            checksum: "b7f4b85254d59e6e26f2f15834e12ef6eeb4f04a741649293700e371e9d3717e"
         ),
         .binaryTarget(
             name: "Libswresample",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libswresample.xcframework.zip",
-            checksum: "beefd946fe84d59cbbe749a29c330f500200c1ac9c1736fb89b85070f61f1216"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libswresample.xcframework.zip",
+            checksum: "012ece4423d6c354943fa8823af10fe57671842d0a38407896144b7b350a080b"
         ),
         .binaryTarget(
             name: "Libswscale",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libswscale.xcframework.zip",
-            checksum: "707b26e580cd49edb9ee3282d44ef5df8d1637b65013642b11e703586df0ef5c"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libswscale.xcframework.zip",
+            checksum: "4db384b60fbf50f7a2e50a260635e76fa8cd04728cd9af0627b2636f1e9aff9a"
         ),
 
         .binaryTarget(
@@ -305,14 +305,14 @@ let package = Package(
 
         .binaryTarget(
             name: "Libstarmine_ad",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libstarmine_ad.xcframework.zip",
-            checksum: "57b38db122389fbdef2211cca2c80e96803e445e5c47c8d7a63dc54f505d5257"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libstarmine_ad.xcframework.zip",
+            checksum: "8b1dfcd7bcdb2f533c637aa987c4dbc4d3d520b1ec875792a3e960a69ea06fde"
         ),
 
         .binaryTarget(
             name: "Libmpv",
-            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.4/Libmpv.xcframework.zip",
-            checksum: "36554242ef13c2efef8d1a04795d05aec49530d800dae43719e61424848e5dba"
+            url: "https://github.com/enimrats/MPVKit/releases/download/0.41.0-starmine.5/Libmpv.xcframework.zip",
+            checksum: "e943f933d8c5bcf7e4768bb712b7e283617a24445547dffb4cca751866e65b3a"
         ),
         //AUTO_GENERATE_TARGETS_END//
     ]
