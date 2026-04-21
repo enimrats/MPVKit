@@ -114,7 +114,7 @@ class BaseBuild {
     var pullLatestVersion = false;
     init(library: Library) {
         self.library = library
-        directoryURL = URL.currentDirectory + "\(library.rawValue)-\(library.version)"
+        directoryURL = URL.currentDirectory + "\(library.rawValue)-\(library.directoryVersion)"
         xcframeworkDirectoryURL = URL.currentDirectory + ["release", "xcframework"]
     }
 
@@ -127,19 +127,18 @@ class BaseBuild {
         if pullLatestVersion {
             try! Utility.launch(path: "/usr/bin/git", arguments: ["-c", "advice.detachedHead=false", "clone", "--recursive", "--depth", "1", library.url, directoryURL.path])
         } else {
-            try! Utility.launch(path: "/usr/bin/git", arguments: ["-c", "advice.detachedHead=false", "clone", "--recursive", "--depth", "1", "--branch", library.version, library.url, directoryURL.path])
+            try! Utility.launch(path: "/usr/bin/git", arguments: ["-c", "advice.detachedHead=false", "clone", "--recursive", "--depth", "1", "--branch", library.sourceRef, library.url, directoryURL.path])
         }
 
         // apply patch
         let patch = URL.currentDirectory + "../Sources/BuildScripts/patch/\(library.rawValue)"
         if FileManager.default.fileExists(atPath: patch.path) {
-            _ = try? Utility.launch(path: "/usr/bin/git", arguments: ["checkout", "."], currentDirectoryURL: directoryURL)
             let fileNames = try! FileManager.default.contentsOfDirectory(atPath: patch.path).sorted()
             for fileName in fileNames {
                 if !fileName.hasSuffix(".patch") {
                     continue
                 }
-                try! Utility.launch(path: "/usr/bin/git", arguments: ["apply", "\((patch + fileName).path)"], currentDirectoryURL: directoryURL)
+                try! applyPatchIfNeeded((patch + fileName), name: fileName)
             }
         }
     }
@@ -323,6 +322,23 @@ class BaseBuild {
 
     func frameworks() throws -> [String] {
         [library.rawValue]
+    }
+
+    func applyPatchIfNeeded(_ patchURL: URL, name: String) throws {
+        let quotedPath = "'\(patchURL.path)'"
+        if Utility.shell("/usr/bin/git apply --check \(quotedPath) >/dev/null 2>&1", currentDirectoryURL: directoryURL) != nil {
+            try Utility.launch(
+                path: "/usr/bin/git",
+                arguments: ["apply", patchURL.path],
+                currentDirectoryURL: directoryURL
+            )
+            return
+        }
+        if Utility.shell("/usr/bin/git apply --reverse --check \(quotedPath) >/dev/null 2>&1", currentDirectoryURL: directoryURL) != nil {
+            print("Patch \(name) already present in \(directoryURL.lastPathComponent), skipping")
+            return
+        }
+        throw NSError(domain: "failed to apply \(name) to \(directoryURL.lastPathComponent)", code: 1)
     }
 
     func createXCFramework() throws {

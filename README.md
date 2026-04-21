@@ -40,13 +40,18 @@ make build
 make build platform=ios,macos
 # build GPL version
 make build enable-gpl
-# build against local dependency repos when maintaining the fork
+# build against local dependency repos when overriding the default Starmine forks
 make build platform=ios,macos mpv-source=/abs/path/to/mpv starmine-ad-source=/abs/path/to/libstarmine_ad
 # clean all build temp files and cache
 make clean
 # see help
 make help
 ```
+
+By default, MPVKit now builds `mpv` from `enimrats/mpv@starmine/main` and
+`libstarmine_ad` from `enimrats/libstarmine_ad@starmine/main`, so the Starmine
+audio decoders are included without passing extra source paths. `mpv-source=`
+and `starmine-ad-source=` remain available as local overrides.
 
 This custom Starmine fork currently publishes iOS and macOS artifacts only.
 

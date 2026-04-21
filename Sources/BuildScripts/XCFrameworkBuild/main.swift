@@ -97,10 +97,23 @@ enum Library: String, CaseIterable {
         }
     }
 
+    var sourceRef: String {
+        switch self {
+        case .libmpv, .starmineAd:
+            return "starmine/main"
+        default:
+            return self.version
+        }
+    }
+
+    var directoryVersion: String {
+        sourceRef.replacingOccurrences(of: "/", with: "-")
+    }
+
     var url: String {
         switch self {
         case .libmpv:
-            return "https://github.com/mpv-player/mpv"
+            return "https://github.com/enimrats/mpv"
         case .FFmpeg:
             return "https://github.com/FFmpeg/FFmpeg"
         case .openssl:
@@ -384,9 +397,7 @@ private final class BuildStarmineAd: BaseBuild {
     static let artifactName = "starmine_ad"
 
     static func maybeBuildAll() throws {
-        guard let builder = try BuildStarmineAd() else {
-            return
-        }
+        let builder = try BuildStarmineAd()
         try builder.buildALL()
     }
 
@@ -394,32 +405,31 @@ private final class BuildStarmineAd: BaseBuild {
         URL.currentDirectory + [artifactName, platform.rawValue, "thin", arch.rawValue]
     }
 
-    private let sourceURL: URL
+    private let localSourceURL: URL?
     private let cargoTargetDir: URL
     private let cargoPath: String
     private let rustupPath: String
+    private let usesLocalSource: Bool
 
-    init?() throws {
+    init() throws {
         let configuredPath = BaseBuild.options.localStarmineAdSource
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        if configuredPath.isEmpty {
-            return nil
-        }
-
-        sourceURL = URL(fileURLWithPath: configuredPath).standardizedFileURL
+        usesLocalSource = !configuredPath.isEmpty
+        localSourceURL = usesLocalSource
+            ? URL(fileURLWithPath: configuredPath).standardizedFileURL
+            : nil
         cargoTargetDir = URL.currentDirectory + "starmine_ad-target"
         cargoPath = try Self.requiredExecutable("cargo")
         rustupPath = try Self.requiredExecutable("rustup")
         super.init(library: .starmineAd)
 
-        let manifest = sourceURL + "Cargo.toml"
-        let includeDir = sourceURL + "include"
-        guard FileManager.default.fileExists(atPath: manifest.path) else {
-            throw NSError(domain: "missing Cargo.toml at \(manifest.path)", code: 1)
+        if usesLocalSource {
+            try Self.validateSourceTree(sourceURL)
         }
-        guard FileManager.default.fileExists(atPath: includeDir.path) else {
-            throw NSError(domain: "missing include directory at \(includeDir.path)", code: 1)
-        }
+    }
+
+    private var sourceURL: URL {
+        localSourceURL ?? directoryURL
     }
 
     private static func requiredExecutable(_ name: String) throws -> String {
@@ -433,11 +443,25 @@ private final class BuildStarmineAd: BaseBuild {
     }
 
     override func beforeBuild() throws {
-        // BuildStarmineAd consumes a caller-provided local source tree instead of cloning a repo.
+        if usesLocalSource {
+            return
+        }
+        try super.beforeBuild()
+        try Self.validateSourceTree(sourceURL)
     }
 
     override func frameworks() throws -> [String] {
         ["libstarmine_ad"]
+    }
+
+    override func platforms() -> [PlatformType] {
+        BaseBuild.platforms.filter {
+            $0 == .macos || $0 == .maccatalyst || $0 == .ios || $0 == .isimulator
+        }
+    }
+
+    override func architectures(_ platform: PlatformType) -> [ArchType] {
+        platforms().contains(platform) ? super.architectures(platform) : []
     }
 
     override func build(platform: PlatformType, arch: ArchType) throws {
@@ -493,6 +517,17 @@ private final class BuildStarmineAd: BaseBuild {
         }
     }
 
+    private static func validateSourceTree(_ sourceURL: URL) throws {
+        let manifest = sourceURL + "Cargo.toml"
+        let includeDir = sourceURL + "include"
+        guard FileManager.default.fileExists(atPath: manifest.path) else {
+            throw NSError(domain: "missing Cargo.toml at \(manifest.path)", code: 1)
+        }
+        guard FileManager.default.fileExists(atPath: includeDir.path) else {
+            throw NSError(domain: "missing include directory at \(includeDir.path)", code: 1)
+        }
+    }
+
     private func rustTarget(platform: PlatformType, arch: ArchType) throws -> String {
         switch (platform, arch) {
         case (.macos, .arm64):
@@ -532,12 +567,6 @@ private class BuildMPV: BaseBuild {
             return
         }
 
-        let localStarmineAdSource = BaseBuild.options.localStarmineAdSource
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !localStarmineAdSource.isEmpty else {
-            throw NSError(domain: "mpv-source requires starmine-ad-source for the custom Starmine fork", code: 1)
-        }
-
         let sourceURL = URL(fileURLWithPath: localMPVSource).standardizedFileURL
         let mesonBuild = sourceURL + "meson.build"
         guard FileManager.default.fileExists(atPath: mesonBuild.path) else {
@@ -565,23 +594,6 @@ private class BuildMPV: BaseBuild {
                 try applyPatchIfNeeded((patch + fileName), name: fileName)
             }
         }
-    }
-
-    private func applyPatchIfNeeded(_ patchURL: URL, name: String) throws {
-        let quotedPath = "'\(patchURL.path)'"
-        if Utility.shell("/usr/bin/git apply --check \(quotedPath) >/dev/null 2>&1", currentDirectoryURL: directoryURL) != nil {
-            try Utility.launch(
-                path: "/usr/bin/git",
-                arguments: ["apply", patchURL.path],
-                currentDirectoryURL: directoryURL
-            )
-            return
-        }
-        if Utility.shell("/usr/bin/git apply --reverse --check \(quotedPath) >/dev/null 2>&1", currentDirectoryURL: directoryURL) != nil {
-            print("Patch \(name) already present in \(directoryURL.lastPathComponent), skipping")
-            return
-        }
-        throw NSError(domain: "failed to apply \(name) to \(directoryURL.lastPathComponent)", code: 1)
     }
 
     private func supportsMoltenVK() -> Bool {
@@ -637,10 +649,10 @@ private class BuildMPV: BaseBuild {
             array.append("-Dlibbluray=disabled")
         }
         array.append("-Dcplayer=false")
-        let localStarmineAdSource = BaseBuild.options.localStarmineAdSource
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        if !localStarmineAdSource.isEmpty {
-            let thinDir = BuildStarmineAd.thinDir(platform: platform, arch: arch)
+        let thinDir = BuildStarmineAd.thinDir(platform: platform, arch: arch)
+        if FileManager.default.fileExists(atPath: (thinDir + "include").path) &&
+            FileManager.default.fileExists(atPath: (thinDir + "lib").path)
+        {
             array.append("-Dstarmine-ad-incdir=\((thinDir + "include").path)")
             array.append("-Dstarmine-ad-libdir=\((thinDir + "lib").path)")
         }

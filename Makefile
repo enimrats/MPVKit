@@ -10,8 +10,8 @@ help:
 	@echo "                        Arguments:"
 	@echo "                            platform=ios,macos        Only build specified platform (ios,macos,tvos,tvsimulator,isimulator,maccatalyst,xros,xrsimulator)"
 	@echo "                            enable-gpl                Complile to GPL version"
-	@echo "                            mpv-source=/abs/path      Use a local mpv source repo instead of cloning upstream"
-	@echo "                            starmine-ad-source=/abs/path  Build libstarmine_ad from a local source repo"
+	@echo "                            mpv-source=/abs/path      Override the default enimrats/mpv fork source"
+	@echo "                            starmine-ad-source=/abs/path  Override the default enimrats/libstarmine_ad source"
 	@echo "  clean                 Clean the build artifacts"
 	@echo "  help                  Display this help message"
 
