@@ -629,6 +629,7 @@ private class BuildMPV: BaseBuild {
             "-Dvulkan=enabled",
 
             "-Djavascript=disabled",
+            "-Dlibcurl=disabled",
             "-Dzimg=disabled",
             "-Djpeg=disabled",
             "-Dvapoursynth=disabled",
