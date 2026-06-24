@@ -20,8 +20,8 @@ index 09f3ef0..c13f601 100644
          goto error;
      }
  
-+#if !TARGET_OS_IPHONE
-+    // Output-device selection is macOS-only; iOS/tvOS have a single fixed output.
++#if HAVE_COREAUDIO
++    // Output-device selection needs the CoreAudio HAL; iOS/tvOS have a fixed output.
      if (ao->device && ao->device[0]) {
          [p->renderer setAudioOutputDeviceUniqueID:(NSString*)cfstr_from_cstr(ao->device)];
      }
@@ -33,7 +33,7 @@ index 09f3ef0..c13f601 100644
      .reset          = stop,
      .start          = start,
      .set_pause      = set_pause,
-+#if !TARGET_OS_IPHONE
++#if HAVE_COREAUDIO
      .list_devs      = ca_get_device_list,
 +#endif
      .priv_size      = sizeof(struct priv),
@@ -46,7 +46,7 @@ index 2c6131f..b926d6b 100644
      return false;
  }
  
-+#if !TARGET_OS_IPHONE
++#if HAVE_COREAUDIO
 +// Device-querying helpers below use the CoreAudio HAL (AudioObject*/
 +// AudioDeviceID), which is macOS-only. iOS/tvOS have a single fixed output and
 +// no device selection, so these are not needed (and not even available there).
@@ -57,7 +57,7 @@ index 2c6131f..b926d6b 100644
      MP_WARN(ao, "mismatching channels - falling back to %s\n",
              mp_chmap_to_str(out_map));
  }
-+#endif // device HAL (!TARGET_OS_IPHONE)
++#endif // HAVE_COREAUDIO
  #endif
 diff --git a/audio/out/ao_coreaudio_chmap.h b/audio/out/ao_coreaudio_chmap.h
 index d8bdc59..fe42095 100644
@@ -75,7 +75,7 @@ index d8bdc59..fe42095 100644
  AudioChannelLayout *ca_find_standard_layout(void *talloc_ctx, AudioChannelLayout *l);
  AudioChannelLayout *ca_get_acl(struct ao *ao, size_t *out_layout_size);
  void ca_log_layout(struct ao *ao, int l, AudioChannelLayout *layout);
-+#if !TARGET_OS_IPHONE
++#if HAVE_COREAUDIO
  bool ca_init_chmap(struct ao *ao, AudioDeviceID device);
  void ca_get_active_chmap(struct ao *ao, AudioDeviceID device, int channel_count,
                           struct mp_chmap *out_map);
@@ -91,10 +91,10 @@ index 1786602..5d92b58 100644
   * Abstractions on the CoreAudio API to make property setting/getting suck less
  */
  
-+#include <TargetConditionals.h>
++#include "config.h"
 +// The whole file is CoreAudio HAL (AudioObject* property access), macOS-only.
 +// iOS/tvOS have no device-property API; the avfoundation AO there doesn't use it.
-+#if !TARGET_OS_IPHONE
++#if HAVE_COREAUDIO
 +
  #include "audio/out/ao_coreaudio_properties.h"
  #include "audio/out/ao_coreaudio_utils.h"
@@ -104,7 +104,7 @@ index 1786602..5d92b58 100644
      return AudioObjectIsPropertySettable(id, &p_addr, data);
  }
 +
-+#endif // !TARGET_OS_IPHONE
++#endif // HAVE_COREAUDIO
 diff --git a/audio/out/ao_coreaudio_utils.c b/audio/out/ao_coreaudio_utils.c
 index 8ff76a8..b77ea1e 100644
 --- a/audio/out/ao_coreaudio_utils.c
@@ -114,7 +114,7 @@ index 8ff76a8..b77ea1e 100644
  #include "osdep/mac/compat.h"
  
 -#if HAVE_COREAUDIO || HAVE_AVFOUNDATION
-+#if (HAVE_COREAUDIO || HAVE_AVFOUNDATION) && !TARGET_OS_IPHONE
++#if HAVE_COREAUDIO
  #include "audio/out/ao_coreaudio_properties.h"
  #include <CoreAudio/HostTime.h>
  #else
@@ -122,7 +122,7 @@ index 8ff76a8..b77ea1e 100644
  #endif
  
 -#if HAVE_COREAUDIO || HAVE_AVFOUNDATION
-+#if (HAVE_COREAUDIO || HAVE_AVFOUNDATION) && !TARGET_OS_IPHONE
++#if HAVE_COREAUDIO
  static bool ca_is_output_device(struct ao *ao, AudioDeviceID dev)
  {
      size_t n_buffers;
@@ -131,7 +131,7 @@ index 8ff76a8..b77ea1e 100644
  int64_t ca_get_latency(const AudioTimeStamp *ts)
  {
 -#if HAVE_COREAUDIO || HAVE_AVFOUNDATION
-+#if (HAVE_COREAUDIO || HAVE_AVFOUNDATION) && !TARGET_OS_IPHONE
++#if HAVE_COREAUDIO
      uint64_t out = AudioConvertHostTimeToNanos(ts->mHostTime);
      uint64_t now = AudioConvertHostTimeToNanos(AudioGetCurrentHostTime());
  
@@ -140,7 +140,7 @@ index 8ff76a8..b77ea1e 100644
  }
  
 -#if HAVE_COREAUDIO || HAVE_AVFOUNDATION
-+#if (HAVE_COREAUDIO || HAVE_AVFOUNDATION) && !TARGET_OS_IPHONE
++#if HAVE_COREAUDIO
  bool ca_stream_supports_compressed(struct ao *ao, AudioStreamID stream)
  {
      AudioStreamRangedDescription *formats = NULL;
@@ -161,7 +161,7 @@ index 85f674b..7776ab8 100644
  
  void ca_get_device_list(struct ao *ao, struct ao_device_list *list);
 -#if HAVE_COREAUDIO || HAVE_AVFOUNDATION
-+#if (HAVE_COREAUDIO || HAVE_AVFOUNDATION) && !TARGET_OS_IPHONE
++#if HAVE_COREAUDIO
  OSStatus ca_select_device(struct ao *ao, char* name, AudioDeviceID *device);
  #endif
  
@@ -170,7 +170,7 @@ index 85f674b..7776ab8 100644
  int64_t ca_get_latency(const AudioTimeStamp *ts);
  
 -#if HAVE_COREAUDIO || HAVE_AVFOUNDATION
-+#if (HAVE_COREAUDIO || HAVE_AVFOUNDATION) && !TARGET_OS_IPHONE
++#if HAVE_COREAUDIO
  bool ca_stream_supports_compressed(struct ao *ao, AudioStreamID stream);
  OSStatus ca_lock_device(AudioDeviceID device, pid_t *pid);
  OSStatus ca_unlock_device(AudioDeviceID device, pid_t *pid);
