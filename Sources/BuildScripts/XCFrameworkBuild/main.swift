@@ -51,7 +51,7 @@ enum Library: String, CaseIterable {
         case .libmpv:
             return "v0.41.0"
         case .FFmpeg:
-            return "n8.0.1"
+            return "n8.1.1"
         case .openssl:
             return "3.3.5"
         case .gnutls:
@@ -77,7 +77,7 @@ enum Library: String, CaseIterable {
         case .lcms2:
             return "2.17.0"
         case .libplacebo:
-            return "7.351.0-2512"
+            return "7.360.1"
         case .libdovi:
             return "3.3.2"
         case .vulkan:
@@ -670,11 +670,13 @@ private class BuildMPV: BaseBuild {
             array.append("-Dvideotoolbox-pl=enabled")
             array.append("-Dswift-build=disabled")
             array.append("-Daudiounit=enabled")
-            array.append("-Davfoundation=disabled")
+            // Enable the avfoundation AO (AVSampleBufferAudioRenderer) on iOS/tvOS.
+            // CoreAudio HAL (AudioObject*) is macOS-only, so keep coreaudio off.
+            array.append("-Davfoundation=enabled")
+            array.append("-Dcoreaudio=disabled")
             array.append("-Dlua=disabled")
             if platform == .maccatalyst {
                 array.append("-Dcocoa=disabled")
-                array.append("-Dcoreaudio=disabled")
             } else if platform == .xros || platform == .xrsimulator {
                 array.append("-Dios-gl=disabled")
             } else {
@@ -881,7 +883,7 @@ private class BuildFFMPEG: BaseBuild {
         if framework == "Libavcodec" {
             return ["xvmc", "vdpau", "qsv", "dxva2", "d3d11va", "d3d12va"]
         } else if framework == "Libavutil" {
-            return ["hwcontext_vulkan", "hwcontext_vdpau", "hwcontext_vaapi", "hwcontext_qsv", "hwcontext_opencl", "hwcontext_dxva2", "hwcontext_d3d11va", "hwcontext_d3d12va", "hwcontext_cuda"]
+            return ["hwcontext_vulkan", "hwcontext_vdpau", "hwcontext_vaapi", "hwcontext_qsv", "hwcontext_opencl", "hwcontext_dxva2", "hwcontext_d3d11va", "hwcontext_d3d12va", "hwcontext_cuda", "hwcontext_amf"]
         } else {
             return super.frameworkExcludeHeaders(framework)
         }
@@ -911,7 +913,7 @@ private class BuildFFMPEG: BaseBuild {
         // ,"--disable-rdft"
         // ,"--disable-fft"
         // Hardware accelerators:
-        "--disable-d3d11va", "--disable-d3d12va", "--disable-dxva2", "--disable-vaapi", "--disable-vdpau",
+        "--disable-amf", "--disable-d3d11va", "--disable-d3d12va", "--disable-dxva2", "--disable-vaapi", "--disable-vdpau",
         // Individual component options:
         // ,"--disable-everything"
         // ./configure --list-muxers
